@@ -2,6 +2,7 @@ import React, { useEffect, useRef/*, useState*/ } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { generate3DLattice, undo3DLast } from '../utils/3DlatticeUtils';
+import { generateRadialLattice, undoRadialLast } from "../utils/RadialLatticeUtils";
 import '../styles/Lattice.css';
 
 const LatticePage = () => {
@@ -45,7 +46,7 @@ const LatticePage = () => {
     const light = new THREE.AmbientLight(0xffffff, 1.5);
     scene.add(light);
 
-    generate3DLattice('1/1', scene, spheresRef);
+    generateRadialLattice('1/1', scene, spheresRef);
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -67,18 +68,18 @@ const LatticePage = () => {
     const inputRatio = event.target.elements.ratio.value;
 
     if (/^\d+\/\d+$/.test(inputRatio) && sceneRef.current) {
-      generate3DLattice(inputRatio, sceneRef.current, spheresRef/*, visualizationMode*/);
+      generateRadialLattice(inputRatio, sceneRef.current, spheresRef/*, visualizationMode*/);
     }
 
     event.target.reset();
   };
 
-  const handle3DUndo = () => {
+  const handleRadialUndo = () => {
     const scene = sceneRef.current;
     const renderer = rendererRef.current;
     const camera = cameraRef.current;
     if (scene && renderer && camera) {
-      undo3DLast(scene, spheresRef, renderer, camera);
+      undoRadialLast(scene, spheresRef, renderer, camera);
     }
   };
 
@@ -91,7 +92,7 @@ const LatticePage = () => {
         if (line) scene.remove(line);
       });
       spheresRef.current = [];
-      generate3DLattice('1/1', scene, spheresRef);
+      generateRadialLattice('1/1', scene, spheresRef);
     }
   };
 
@@ -114,7 +115,7 @@ const LatticePage = () => {
         <form onSubmit={handleAddRatio} className="form">
           <input className="input" type="text" name="ratio" placeholder="Enter ratio (e.g. 3/2)" required />
           <button className="button" type="submit">Add Ratio</button>
-          <button className="button" type="button" onClick={handle3DUndo} >Undo</button>
+          <button className="button" type="button" onClick={handleRadialUndo} >Undo</button>
           <button className="button" type="button" onClick={resetLattice} >Reset</button>
           {/* <button className="button" type="button" onClick={toggleVisualizationMode} >Switch to {visualizationMode === '3D cubic' ? 'Radial' : '3D cubic'} Visualization</button> */}
         </form>
